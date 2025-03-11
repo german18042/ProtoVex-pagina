@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Efecto de hover 3D para tarjetas
-    const cards = document.querySelectorAll('.feature-item, .service-item, .team-member');
+    const cards = document.querySelectorAll('.feature-item, .service-item, .team-member, .portfolio-item');
     if (cards.length > 0) {
         cards.forEach(card => {
             card.addEventListener('mousemove', function(e) {
@@ -101,6 +101,99 @@ document.addEventListener('DOMContentLoaded', function() {
             card.addEventListener('mouseleave', function() {
                 this.style.transform = 'perspective(1000px) rotateY(0) rotateX(0) translateZ(0)';
                 this.style.transition = 'all 0.5s ease';
+            });
+        });
+    }
+    
+    // Efectos especiales para la sección de portafolio
+    const portfolioItems = document.querySelectorAll('.portfolio-item');
+    const portfolioFilters = document.querySelectorAll('.portfolio-filter-btn');
+    
+    // Inicializar animaciones para los elementos del portafolio
+    if (portfolioItems.length > 0) {
+        // Efecto de aparición escalonada
+        portfolioItems.forEach((item, index) => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(50px)';
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            item.style.opacity = '1';
+                            item.style.transform = 'translateY(0)';
+                            item.style.transition = 'all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1)';
+                        }, index * 150);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.2 });
+            
+            observer.observe(item);
+        });
+        
+        // Efecto de hover avanzado
+        portfolioItems.forEach(item => {
+            const overlay = item.querySelector('.portfolio-overlay');
+            const link = item.querySelector('.portfolio-link');
+            const img = item.querySelector('img');
+            const info = item.querySelector('.portfolio-info');
+            
+            item.addEventListener('mouseenter', () => {
+                if (overlay) overlay.style.clipPath = 'circle(150% at 50% 50%)';
+                if (link) {
+                    link.style.opacity = '1';
+                    link.style.transform = 'translateY(0) scale(1)';
+                }
+                if (img) img.style.transform = 'scale(1.1)';
+                if (info) info.style.backgroundColor = '#f9f9f9';
+            });
+            
+            item.addEventListener('mouseleave', () => {
+                if (overlay) overlay.style.clipPath = 'circle(0% at 50% 50%)';
+                if (link) {
+                    link.style.opacity = '0';
+                    link.style.transform = 'translateY(30px) scale(0.8)';
+                }
+                if (img) img.style.transform = 'scale(1)';
+                if (info) info.style.backgroundColor = 'var(--light-color)';
+            });
+        });
+    }
+    
+    // Filtrado de proyectos si existen los filtros
+    if (portfolioFilters.length > 0) {
+        portfolioFilters.forEach(filter => {
+            filter.addEventListener('click', function() {
+                // Remover clase activa de todos los filtros
+                portfolioFilters.forEach(btn => btn.classList.remove('active'));
+                // Añadir clase activa al filtro clickeado
+                this.classList.add('active');
+                
+                const filterValue = this.getAttribute('data-filter');
+                
+                // Filtrar los elementos del portafolio
+                portfolioItems.forEach(item => {
+                    if (filterValue === 'all') {
+                        item.style.display = 'block';
+                        setTimeout(() => {
+                            item.style.opacity = '1';
+                            item.style.transform = 'scale(1)';
+                        }, 200);
+                    } else if (item.classList.contains(filterValue)) {
+                        item.style.display = 'block';
+                        setTimeout(() => {
+                            item.style.opacity = '1';
+                            item.style.transform = 'scale(1)';
+                        }, 200);
+                    } else {
+                        item.style.opacity = '0';
+                        item.style.transform = 'scale(0.8)';
+                        setTimeout(() => {
+                            item.style.display = 'none';
+                        }, 300);
+                    }
+                });
             });
         });
     }
